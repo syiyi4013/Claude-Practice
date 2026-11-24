@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>치킨집 창업 체크리스트</title>
+<style>
+  :root {
+    --bg: #faf7f2;
+    --card: #ffffff;
+    --text: #2b2118;
+    --muted: #8a7c6d;
+    --line: #eee6da;
+    --accent: #e8731a;
+    --accent-soft: #fdf0e4;
+    --done: #2f9e6b;
+    --shadow: 0 2px 10px rgba(60, 40, 20, 0.06);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Malgun Gothic", "맑은 고딕", sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.5;
+    word-break: keep-all;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: 760px; margin: 0 auto; padding: 32px 16px 60px; }
+
+  /* 상단 헤더 + 전체 진행률 */
+  header {
+    background: linear-gradient(135deg, #f08a2c, #d9600f);
+    color: #fff;
+    border-radius: 20px;
+    padding: 28px 24px;
+    box-shadow: 0 8px 24px rgba(217, 96, 15, 0.25);
+    margin-bottom: 24px;
+  }
+  header .eyebrow { font-size: 13px; opacity: .85; letter-spacing: .5px; }
+  header h1 { font-size: 26px; font-weight: 800; margin: 4px 0 20px; }
+  .total-row { display: flex; align-items: flex-end; justify-content: space-between; gap: 12px; }
+  .total-pct { font-size: 48px; font-weight: 800; line-height: 1; }
+  .total-pct small { font-size: 22px; font-weight: 700; }
+  .total-count { font-size: 14px; opacity: .9; text-align: right; }
+  .bar { height: 10px; background: rgba(255,255,255,.3); border-radius: 99px; overflow: hidden; margin-top: 14px; }
+  .bar > div { height: 100%; width: 0; background: #fff; border-radius: 99px; transition: width .4s ease; }
+
+  /* 카테고리 카드 */
+  .card {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    box-shadow: var(--shadow);
+    margin-bottom: 14px;
+    overflow: hidden;
+  }
+  .card-head {
+    width: 100%;
+    display: flex; align-items: center; gap: 14px;
+    padding: 18px 20px;
+    background: none; border: 0; cursor: pointer;
+    font: inherit; color: inherit; text-align: left;
+  }
+  .icon {
+    flex: 0 0 44px; height: 44px; border-radius: 12px;
+    background: var(--accent-soft);
+    display: grid; place-items: center; font-size: 22px;
+  }
+  .card-title { flex: 1; min-width: 0; }
+  .card-title h2 { font-size: 17px; font-weight: 700; }
+  .mini-bar { height: 6px; background: var(--line); border-radius: 99px; overflow: hidden; margin-top: 8px; }
+  .mini-bar > div { height: 100%; width: 0; background: var(--accent); border-radius: 99px; transition: width .4s ease, background .3s; }
+  .card.complete .mini-bar > div { background: var(--done); }
+  .card-pct { font-size: 15px; font-weight: 700; color: var(--accent); min-width: 48px; text-align: right; }
+  .card.complete .card-pct { color: var(--done); }
+  .chev { color: var(--muted); transition: transform .25s; font-size: 14px; }
+  .card.open .chev { transform: rotate(180deg); }
+
+  .items { display: none; border-top: 1px solid var(--line); padding: 6px 8px 10px; }
+  .card.open .items { display: block; }
+
+  /* 체크 항목 */
+  .item {
+    display: flex; align-items: center; gap: 12px;
+    padding: 12px; border-radius: 10px; cursor: pointer;
+    transition: background .15s;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .item:hover { background: #fbf8f4; }
+  .item input { position: absolute; opacity: 0; pointer-events: none; }
+  .box {
+    flex: 0 0 24px; height: 24px; border-radius: 7px;
+    border: 2px solid #d9cdbd; background: #fff;
+    display: grid; place-items: center;
+    transition: all .2s;
+  }
+  .box svg { width: 14px; height: 14px; opacity: 0; transform: scale(.5); transition: all .2s; }
+  .item input:checked + .box { background: var(--done); border-color: var(--done); }
+  .item input:checked + .box svg { opacity: 1; transform: scale(1); }
+  .item input:focus-visible + .box { outline: 3px solid rgba(232,115,26,.35); outline-offset: 2px; }
+  .label { font-size: 15px; }
+  .item input:checked ~ .label { color: var(--muted); text-decoration: line-through; }
+
+  /* 하단 */
+  .actions { display: flex; justify-content: center; gap: 10px; margin-top: 24px; flex-wrap: wrap; }
+  .btn {
+    font: inherit; font-size: 14px; font-weight: 600;
+    padding: 10px 18px; border-radius: 99px; cursor: pointer;
+    border: 1px solid var(--line); background: var(--card); color: var(--text);
+  }
+  .btn:hover { border-color: var(--accent); color: var(--accent); }
+  .note { text-align: center; color: var(--muted); font-size: 13px; margin-top: 16px; }
+
+  .celebrate {
+    display: none; text-align: center; font-weight: 700; color: var(--done);
+    background: #e9f7f0; border-radius: 12px; padding: 14px; margin-bottom: 16px;
+  }
+  .celebrate.show { display: block; }
+
+  @media (max-width: 480px) {
+    .wrap { padding-top: 16px; }
+    header { padding: 22px 18px; border-radius: 16px; }
+    header h1 { font-size: 22px; }
+    .total-pct { font-size: 40px; }
+    .card-head { padding: 16px; gap: 12px; }
+    .icon { flex-basis: 40px; height: 40px; font-size: 20px; }
+    .card-title h2 { font-size: 16px; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="eyebrow">CHICKEN SHOP STARTUP</div>
+    <h1>🍗 치킨집 창업 장비 체크리스트</h1>
+    <div class="total-row">
+      <div class="total-pct"><span id="totalPct">0</span><small>%</small></div>
+      <div class="total-count">전체 진행<br><b id="totalCount">0 / 0</b> 완료</div>
+    </div>
+    <div class="bar"><div id="totalBar"></div></div>
+  </header>
+
+  <div class="celebrate" id="celebrate">🎉 모든 장비 준비 완료! 오픈을 축하드려요!</div>
+
+  <main id="list"></main>
+
+  <div class="actions">
+    <button class="btn" id="openAll">모두 펼치기</button>
+    <button class="btn" id="closeAll">모두 접기</button>
+    <button class="btn" id="reset">체크 초기화</button>
+  </div>
+  <p class="note">체크한 내용은 이 브라우저에 자동 저장됩니다.</p>
+</div>
+
+<script>
+  // 체크리스트 내용 (여기 문구를 고치면 항목이 바뀝니다)
+  const DATA = [
+    { id: "fridge", icon: "🧊", name: "냉장고", items: [
+      "필요 용량 결정 (냉장/냉동 비율)",
+      "업소용 냉장고 견적 3곳 이상 비교",
+      "설치 위치 및 문 여는 방향 확인",
+      "전기 용량·전용 콘센트 확인",
+      "온도 정상 작동 테스트"
+    ]},
+    { id: "fryer", icon: "🍳", name: "튀김기", items: [
+      "가스식 / 전기식 선택",
+      "튀김조 개수와 용량 결정",
+      "가스 배관 또는 전기 공사 확인",
+      "온도 조절기·안전장치 점검",
+      "기름 교체·청소 방법 숙지"
+    ]},
+    { id: "table", icon: "🔪", name: "작업대", items: [
+      "주방 동선에 맞는 크기 측정",
+      "스테인리스 재질·두께 확인",
+      "하부 수납(선반/서랍) 구성 결정",
+      "높이 조절·수평 맞춤"
+    ]},
+    { id: "sink", icon: "🚰", name: "싱크대", items: [
+      "볼 개수 결정 (2조 / 3조)",
+      "급수·배수 위치 확인",
+      "온수 공급 연결",
+      "그리스트랩(기름 분리기) 설치",
+      "누수 테스트"
+    ]},
+    { id: "hood", icon: "💨", name: "후드", items: [
+      "튀김기 크기에 맞는 후드 규격 선정",
+      "배기 덕트 경로 확인",
+      "배기 팬 용량(풍량) 확인",
+      "기름 필터 설치 및 청소 주기 계획",
+      "건물 관리 규정·민원 소지 확인"
+    ]},
+    { id: "dish", icon: "🍽️", name: "식기세척기", items: [
+      "도어형 / 언더카운터형 선택",
+      "하루 처리량에 맞는 용량 결정",
+      "급수·배수·전기 연결 확인",
+      "세제·린스 자동 공급 장치 설치",
+      "시험 세척 운전"
+    ]}
+  ];
+
+  const STORE_KEY = "chicken-checklist-v1";
+  let state = {};
+  try { state = JSON.parse(localStorage.getItem(STORE_KEY)) || {}; } catch (e) { state = {}; }
+  function save() { try { localStorage.setItem(STORE_KEY, JSON.stringify(state)); } catch (e) {} }
+
+  const CHECK_SVG = '<svg viewBox="0 0 16 16" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8.5l3.2 3L13 4.5"/></svg>';
+  const list = document.getElementById("list");
+
+  // 화면 만들기
+  DATA.forEach((cat, ci) => {
+    const card = document.createElement("section");
+    card.className = "card" + (ci === 0 ? " open" : "");
+    card.dataset.id = cat.id;
+    card.innerHTML = `
+      <button class="card-head" aria-expanded="${ci === 0}">
+        <span class="icon">${cat.icon}</span>
+        <span class="card-title">
+          <h2>${cat.name}</h2>
+          <div class="mini-bar"><div></div></div>
+        </span>
+        <span class="card-pct">0%</span>
+        <span class="chev">▼</span>
+      </button>
+      <div class="items">
+        ${cat.items.map((text, i) => {
+          const key = cat.id + "-" + i;
+          return `<label class="item">
+            <input type="checkbox" data-key="${key}" ${state[key] ? "checked" : ""}>
+            <span class="box">${CHECK_SVG}</span>
+            <span class="label">${text}</span>
+          </label>`;
+        }).join("")}
+      </div>`;
+    list.appendChild(card);
+
+    card.querySelector(".card-head").addEventListener("click", () => {
+      const open = card.classList.toggle("open");
+      card.querySelector(".card-head").setAttribute("aria-expanded", open);
+    });
+  });
+
+  list.addEventListener("change", (e) => {
+    if (e.target.matches("input[type=checkbox]")) {
+      state[e.target.dataset.key] = e.target.checked;
+      save();
+      update();
+    }
+  });
+
+  // 진행률 계산
+  function update() {
+    let total = 0, done = 0;
+    document.querySelectorAll(".card").forEach(card => {
+      const boxes = card.querySelectorAll("input[type=checkbox]");
+      const checked = card.querySelectorAll("input[type=checkbox]:checked").length;
+      const pct = Math.round(checked / boxes.length * 100);
+      card.querySelector(".mini-bar > div").style.width = pct + "%";
+      card.querySelector(".card-pct").textContent = pct + "%";
+      card.classList.toggle("complete", pct === 100);
+      total += boxes.length; done += checked;
+    });
+    const pct = total ? Math.round(done / total * 100) : 0;
+    document.getElementById("totalPct").textContent = pct;
+    document.getElementById("totalCount").textContent = done + " / " + total;
+    document.getElementById("totalBar").style.width = pct + "%";
+    document.getElementById("celebrate").classList.toggle("show", pct === 100);
+  }
+
+  function setAll(open) {
+    document.querySelectorAll(".card").forEach(c => {
+      c.classList.toggle("open", open);
+      c.querySelector(".card-head").setAttribute("aria-expanded", open);
+    });
+  }
+  document.getElementById("openAll").onclick = () => setAll(true);
+  document.getElementById("closeAll").onclick = () => setAll(false);
+  document.getElementById("reset").onclick = () => {
+    if (!confirm("모든 체크를 해제할까요?")) return;
+    state = {}; save();
+    document.querySelectorAll("input[type=checkbox]").forEach(b => b.checked = false);
+    update();
+  };
+
+  update();
+</script>
+</body>
+</html>

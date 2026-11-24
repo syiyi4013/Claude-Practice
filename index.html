@@ -6,16 +6,20 @@
 <title>치킨집 창업 체크리스트</title>
 <style>
   :root {
-    --bg: #faf7f2;
+    --bg: #f5f7fb;
     --card: #ffffff;
-    --text: #2b2118;
-    --muted: #8a7c6d;
-    --line: #eee6da;
-    --accent: #e8731a;
-    --accent-soft: #fdf0e4;
-    --done: #2f9e6b;
+    --text: #14213d;
+    --muted: #6b7a90;
+    --line: #e3e8f0;
+    --navy: #1b2f57;
+    --navy-deep: #0f1e3d;
+    --accent: #1f3f7a;
+    --accent-hover: #162f5e;
+    --accent-soft: #eaf0f8;
+    --hover: #f7f9fc;
+    --done: #2a7f62;
     --danger: #d64545;
-    --shadow: 0 2px 10px rgba(60, 40, 20, 0.06);
+    --shadow: 0 2px 10px rgba(15, 30, 61, 0.06);
   }
   * { box-sizing: border-box; margin: 0; padding: 0; }
   body {
@@ -29,12 +33,29 @@
   .wrap { max-width: 760px; margin: 0 auto; padding: 32px 16px 60px; }
 
   /* 상단 헤더 + 전체 진행률 */
+  /* 맨 위 문구 */
+  .hello {
+    display: flex; justify-content: center;
+    margin-bottom: 16px;
+  }
+  .hello span {
+    display: inline-block;
+    padding: 8px 18px;
+    border-radius: 99px;
+    background: var(--card);
+    border: 1px solid var(--line);
+    box-shadow: var(--shadow);
+    color: var(--navy);
+    font-size: 15px; font-weight: 700;
+    text-align: center;
+  }
+
   header {
-    background: linear-gradient(135deg, #f08a2c, #d9600f);
+    background: linear-gradient(135deg, var(--navy), var(--navy-deep));
     color: #fff;
     border-radius: 20px;
     padding: 28px 24px;
-    box-shadow: 0 8px 24px rgba(217, 96, 15, 0.25);
+    box-shadow: 0 8px 24px rgba(15, 30, 61, 0.25);
     margin-bottom: 24px;
   }
   header .eyebrow { font-size: 13px; opacity: .85; letter-spacing: .5px; }
@@ -84,7 +105,7 @@
 
   /* 체크 항목 */
   .row { display: flex; align-items: center; border-radius: 10px; transition: background .15s; }
-  .row:hover { background: #fbf8f4; }
+  .row:hover { background: var(--hover); }
   .item {
     flex: 1; min-width: 0;
     display: flex; align-items: center; gap: 12px;
@@ -94,14 +115,14 @@
   .item input { position: absolute; opacity: 0; pointer-events: none; }
   .box {
     flex: 0 0 24px; height: 24px; border-radius: 7px;
-    border: 2px solid #d9cdbd; background: #fff;
+    border: 2px solid #c5cfdd; background: #fff;
     display: grid; place-items: center;
     transition: all .2s;
   }
   .box svg { width: 14px; height: 14px; opacity: 0; transform: scale(.5); transition: all .2s; }
   .item input:checked + .box { background: var(--done); border-color: var(--done); }
   .item input:checked + .box svg { opacity: 1; transform: scale(1); }
-  .item input:focus-visible + .box { outline: 3px solid rgba(232,115,26,.35); outline-offset: 2px; }
+  .item input:focus-visible + .box { outline: 3px solid rgba(31,63,122,.3); outline-offset: 2px; }
   .label { font-size: 15px; overflow-wrap: anywhere; }
   .item input:checked ~ .label { color: var(--muted); text-decoration: line-through; }
 
@@ -109,7 +130,7 @@
   .del {
     flex: 0 0 36px; height: 36px; margin-right: 4px;
     border: 0; background: none; border-radius: 8px; cursor: pointer;
-    color: #c4b6a5; font-size: 20px; line-height: 1;
+    color: #a7b2c3; font-size: 20px; line-height: 1;
     opacity: .55; transition: all .15s;
   }
   .row:hover .del { opacity: 1; }
@@ -127,15 +148,15 @@
     font: inherit; font-size: 15px;
     padding: 10px 14px;
     border: 1px solid var(--line); border-radius: 10px;
-    background: #fdfbf8; color: var(--text);
+    background: var(--hover); color: var(--text);
   }
-  .add input:focus { outline: none; border-color: var(--accent); background: #fff; box-shadow: 0 0 0 3px rgba(232,115,26,.15); }
+  .add input:focus { outline: none; border-color: var(--accent); background: #fff; box-shadow: 0 0 0 3px rgba(31,63,122,.15); }
   .add button {
     font: inherit; font-size: 14px; font-weight: 700;
     padding: 0 16px; border: 0; border-radius: 10px; cursor: pointer;
     background: var(--accent); color: #fff; white-space: nowrap;
   }
-  .add button:hover { background: #d9600f; }
+  .add button:hover { background: var(--accent-hover); }
 
   /* 하단 */
   .actions { display: flex; justify-content: center; gap: 10px; margin-top: 24px; flex-wrap: wrap; }
@@ -150,12 +171,13 @@
 
   .celebrate {
     display: none; text-align: center; font-weight: 700; color: var(--done);
-    background: #e9f7f0; border-radius: 12px; padding: 14px; margin-bottom: 16px;
+    background: #e8f4ef; border-radius: 12px; padding: 14px; margin-bottom: 16px;
   }
   .celebrate.show { display: block; }
 
   @media (max-width: 480px) {
     .wrap { padding-top: 16px; }
+    .hello span { font-size: 14px; padding: 7px 14px; }
     header { padding: 22px 18px; border-radius: 16px; }
     header h1 { font-size: 22px; }
     .total-pct { font-size: 40px; }
@@ -167,6 +189,7 @@
 </head>
 <body>
 <div class="wrap">
+  <div class="hello"><span>나의 첫 번째 AI 웹사이트 🎉</span></div>
   <header>
     <div class="eyebrow">CHICKEN SHOP STARTUP</div>
     <h1>🍗 치킨집 창업 장비 체크리스트</h1>
