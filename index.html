@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>치킨집 창업 체크리스트</title>
+<style>
+  :root {
+    --bg: #faf7f2;
+    --card: #ffffff;
+    --text: #2b2118;
+    --muted: #8a7c6d;
+    --line: #eee6da;
+    --accent: #e8731a;
+    --accent-soft: #fdf0e4;
+    --done: #2f9e6b;
+    --danger: #d64545;
+    --shadow: 0 2px 10px rgba(60, 40, 20, 0.06);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Malgun Gothic", "맑은 고딕", sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.5;
+    word-break: keep-all;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: 760px; margin: 0 auto; padding: 32px 16px 60px; }
+
+  /* 상단 헤더 + 전체 진행률 */
+  header {
+    background: linear-gradient(135deg, #f08a2c, #d9600f);
+    color: #fff;
+    border-radius: 20px;
+    padding: 28px 24px;
+    box-shadow: 0 8px 24px rgba(217, 96, 15, 0.25);
+    margin-bottom: 24px;
+  }
+  header .eyebrow { font-size: 13px; opacity: .85; letter-spacing: .5px; }
+  header h1 { font-size: 26px; font-weight: 800; margin: 4px 0 20px; }
+  .total-row { display: flex; align-items: flex-end; justify-content: space-between; gap: 12px; }
+  .total-pct { font-size: 48px; font-weight: 800; line-height: 1; }
+  .total-pct small { font-size: 22px; font-weight: 700; }
+  .total-count { font-size: 14px; opacity: .9; text-align: right; }
+  .bar { height: 10px; background: rgba(255,255,255,.3); border-radius: 99px; overflow: hidden; margin-top: 14px; }
+  .bar > div { height: 100%; width: 0; background: #fff; border-radius: 99px; transition: width .4s ease; }
+
+  /* 카테고리 카드 */
+  .card {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    box-shadow: var(--shadow);
+    margin-bottom: 14px;
+    overflow: hidden;
+  }
+  .card-head {
+    width: 100%;
+    display: flex; align-items: center; gap: 14px;
+    padding: 18px 20px;
+    background: none; border: 0; cursor: pointer;
+    font: inherit; color: inherit; text-align: left;
+  }
+  .icon {
+    flex: 0 0 44px; height: 44px; border-radius: 12px;
+    background: var(--accent-soft);
+    display: grid; place-items: center; font-size: 22px;
+  }
+  .card-title { flex: 1; min-width: 0; }
+  .card-title h2 { font-size: 17px; font-weight: 700; }
+  .card-title h2 .cnt { font-size: 13px; font-weight: 500; color: var(--muted); margin-left: 6px; }
+  .mini-bar { height: 6px; background: var(--line); border-radius: 99px; overflow: hidden; margin-top: 8px; }
+  .mini-bar > div { height: 100%; width: 0; background: var(--accent); border-radius: 99px; transition: width .4s ease, background .3s; }
+  .card.complete .mini-bar > div { background: var(--done); }
+  .card-pct { font-size: 15px; font-weight: 700; color: var(--accent); min-width: 48px; text-align: right; }
+  .card.complete .card-pct { color: var(--done); }
+  .chev { color: var(--muted); transition: transform .25s; font-size: 14px; }
+  .card.open .chev { transform: rotate(180deg); }
+
+  .items { display: none; border-top: 1px solid var(--line); padding: 6px 8px 12px; }
+  .card.open .items { display: block; }
+  .empty { color: var(--muted); font-size: 14px; text-align: center; padding: 14px 0 6px; }
+
+  /* 체크 항목 */
+  .row { display: flex; align-items: center; border-radius: 10px; transition: background .15s; }
+  .row:hover { background: #fbf8f4; }
+  .item {
+    flex: 1; min-width: 0;
+    display: flex; align-items: center; gap: 12px;
+    padding: 12px; cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .item input { position: absolute; opacity: 0; pointer-events: none; }
+  .box {
+    flex: 0 0 24px; height: 24px; border-radius: 7px;
+    border: 2px solid #d9cdbd; background: #fff;
+    display: grid; place-items: center;
+    transition: all .2s;
+  }
+  .box svg { width: 14px; height: 14px; opacity: 0; transform: scale(.5); transition: all .2s; }
+  .item input:checked + .box { background: var(--done); border-color: var(--done); }
+  .item input:checked + .box svg { opacity: 1; transform: scale(1); }
+  .item input:focus-visible + .box { outline: 3px solid rgba(232,115,26,.35); outline-offset: 2px; }
+  .label { font-size: 15px; overflow-wrap: anywhere; }
+  .item input:checked ~ .label { color: var(--muted); text-decoration: line-through; }
+
+  /* 삭제 버튼 */
+  .del {
+    flex: 0 0 36px; height: 36px; margin-right: 4px;
+    border: 0; background: none; border-radius: 8px; cursor: pointer;
+    color: #c4b6a5; font-size: 20px; line-height: 1;
+    opacity: .55; transition: all .15s;
+  }
+  .row:hover .del { opacity: 1; }
+  .del:hover, .del:focus-visible { color: var(--danger); background: #fdecec; opacity: 1; }
+  @media (hover: none) { .del { opacity: 1; } }
+
+  /* 항목 추가 입력칸 */
+  .add {
+    display: flex; gap: 8px;
+    margin: 8px 4px 0; padding-top: 12px;
+    border-top: 1px dashed var(--line);
+  }
+  .add input {
+    flex: 1; min-width: 0;
+    font: inherit; font-size: 15px;
+    padding: 10px 14px;
+    border: 1px solid var(--line); border-radius: 10px;
+    background: #fdfbf8; color: var(--text);
+  }
+  .add input:focus { outline: none; border-color: var(--accent); background: #fff; box-shadow: 0 0 0 3px rgba(232,115,26,.15); }
+  .add button {
+    font: inherit; font-size: 14px; font-weight: 700;
+    padding: 0 16px; border: 0; border-radius: 10px; cursor: pointer;
+    background: var(--accent); color: #fff; white-space: nowrap;
+  }
+  .add button:hover { background: #d9600f; }
+
+  /* 하단 */
+  .actions { display: flex; justify-content: center; gap: 10px; margin-top: 24px; flex-wrap: wrap; }
+  .btn {
+    font: inherit; font-size: 14px; font-weight: 600;
+    padding: 10px 18px; border-radius: 99px; cursor: pointer;
+    border: 1px solid var(--line); background: var(--card); color: var(--text);
+  }
+  .btn:hover { border-color: var(--accent); color: var(--accent); }
+  .btn.danger:hover { border-color: var(--danger); color: var(--danger); }
+  .note { text-align: center; color: var(--muted); font-size: 13px; margin-top: 16px; }
+
+  .celebrate {
+    display: none; text-align: center; font-weight: 700; color: var(--done);
+    background: #e9f7f0; border-radius: 12px; padding: 14px; margin-bottom: 16px;
+  }
+  .celebrate.show { display: block; }
+
+  @media (max-width: 480px) {
+    .wrap { padding-top: 16px; }
+    header { padding: 22px 18px; border-radius: 16px; }
+    header h1 { font-size: 22px; }
+    .total-pct { font-size: 40px; }
+    .card-head { padding: 16px; gap: 12px; }
+    .icon { flex-basis: 40px; height: 40px; font-size: 20px; }
+    .card-title h2 { font-size: 16px; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="eyebrow">CHICKEN SHOP STARTUP</div>
+    <h1>🍗 치킨집 창업 장비 체크리스트</h1>
+    <div class="total-row">
+      <div class="total-pct"><span id="totalPct">0</span><small>%</small></div>
+      <div class="total-count">전체 진행<br><b id="totalCount">0 / 0</b> 완료</div>
+    </div>
+    <div class="bar"><div id="totalBar"></div></div>
+  </header>
+
+  <div class="celebrate" id="celebrate">🎉 모든 장비 준비 완료! 오픈을 축하드려요!</div>
+
+  <main id="list"></main>
+
+  <div class="actions">
+    <button class="btn" id="openAll">모두 펼치기</button>
+    <button class="btn" id="closeAll">모두 접기</button>
+    <button class="btn danger" id="reset">전체 초기화</button>
+  </div>
+  <p class="note">체크 상태와 추가·삭제한 항목은 이 브라우저에 자동 저장됩니다.</p>
+</div>
+
+<script>
+  // ───────────────────────────────────────────────
+  // 1. 처음 기본 체크리스트 (초기화하면 이 상태로 돌아갑니다)
+  // ───────────────────────────────────────────────
+  const DEFAULT_DATA = [
+    { id: "fridge", icon: "🧊", name: "냉장고", items: [
+      "필요 용량 결정 (냉장/냉동 비율)",
+      "업소용 냉장고 견적 3곳 이상 비교",
+      "설치 위치 및 문 여는 방향 확인",
+      "전기 용량·전용 콘센트 확인",
+      "온도 정상 작동 테스트"
+    ]},
+    { id: "fryer", icon: "🍳", name: "튀김기", items: [
+      "가스식 / 전기식 선택",
+      "튀김조 개수와 용량 결정",
+      "가스 배관 또는 전기 공사 확인",
+      "온도 조절기·안전장치 점검",
+      "기름 교체·청소 방법 숙지"
+    ]},
+    { id: "table", icon: "🔪", name: "작업대", items: [
+      "주방 동선에 맞는 크기 측정",
+      "스테인리스 재질·두께 확인",
+      "하부 수납(선반/서랍) 구성 결정",
+      "높이 조절·수평 맞춤"
+    ]},
+    { id: "sink", icon: "🚰", name: "싱크대", items: [
+      "볼 개수 결정 (2조 / 3조)",
+      "급수·배수 위치 확인",
+      "온수 공급 연결",
+      "그리스트랩(기름 분리기) 설치",
+      "누수 테스트"
+    ]},
+    { id: "hood", icon: "💨", name: "후드", items: [
+      "튀김기 크기에 맞는 후드 규격 선정",
+      "배기 덕트 경로 확인",
+      "배기 팬 용량(풍량) 확인",
+      "기름 필터 설치 및 청소 주기 계획",
+      "건물 관리 규정·민원 소지 확인"
+    ]},
+    { id: "dish", icon: "🍽️", name: "식기세척기", items: [
+      "도어형 / 언더카운터형 선택",
+      "하루 처리량에 맞는 용량 결정",
+      "급수·배수·전기 연결 확인",
+      "세제·린스 자동 공급 장치 설치",
+      "시험 세척 운전"
+    ]}
+  ];
+
+  // ───────────────────────────────────────────────
+  // 2. 저장/불러오기 (브라우저 localStorage 사용)
+  // ───────────────────────────────────────────────
+  const STORE_KEY = "chicken-checklist-v2";
+  const OLD_KEY = "chicken-checklist-v1"; // 이전 버전에서 체크한 내용
+
+  function newId() {
+    return Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
+  }
+
+  // 기본 체크리스트로 새 데이터 만들기
+  function makeDefault(oldChecks) {
+    return DEFAULT_DATA.map(cat => ({
+      id: cat.id,
+      items: cat.items.map((text, i) => ({
+        id: newId(),
+        text: text,
+        done: !!(oldChecks && oldChecks[cat.id + "-" + i])
+      }))
+    }));
+  }
+
+  function load() {
+    try {
+      const saved = JSON.parse(localStorage.getItem(STORE_KEY));
+      if (Array.isArray(saved)) return saved;
+    } catch (e) {}
+    // 저장된 게 없으면: 예전 버전 체크 기록이 있으면 이어받고, 없으면 기본값
+    let old = null;
+    try { old = JSON.parse(localStorage.getItem(OLD_KEY)); } catch (e) {}
+    return makeDefault(old);
+  }
+
+  function save() {
+    try { localStorage.setItem(STORE_KEY, JSON.stringify(state)); } catch (e) {}
+  }
+
+  let state = load();
+
+  // ───────────────────────────────────────────────
+  // 3. 화면 그리기
+  // ───────────────────────────────────────────────
+  const CHECK_SVG = '<svg viewBox="0 0 16 16" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8.5l3.2 3L13 4.5"/></svg>';
+  const list = document.getElementById("list");
+  const openCards = new Set(["fridge"]); // 처음엔 냉장고만 펼쳐 둠
+
+  function el(tag, className, text) {
+    const e = document.createElement(tag);
+    if (className) e.className = className;
+    if (text != null) e.textContent = text;
+    return e;
+  }
+
+  function render() {
+    list.innerHTML = "";
+    DEFAULT_DATA.forEach(info => {
+      const cat = state.find(c => c.id === info.id);
+      if (!cat) return;
+
+      const card = el("section", "card" + (openCards.has(cat.id) ? " open" : ""));
+      card.dataset.cat = cat.id;
+
+      // 카드 머리 (누르면 펼치기/접기)
+      const head = el("button", "card-head");
+      head.setAttribute("aria-expanded", openCards.has(cat.id));
+      head.innerHTML = `
+        <span class="icon">${info.icon}</span>
+        <span class="card-title">
+          <h2>${info.name}<span class="cnt"></span></h2>
+          <div class="mini-bar"><div></div></div>
+        </span>
+        <span class="card-pct">0%</span>
+        <span class="chev">▼</span>`;
+      head.addEventListener("click", () => {
+        if (openCards.has(cat.id)) openCards.delete(cat.id); else openCards.add(cat.id);
+        card.classList.toggle("open");
+        head.setAttribute("aria-expanded", card.classList.contains("open"));
+      });
+      card.appendChild(head);
+
+      // 항목 목록
+      const items = el("div", "items");
+      if (cat.items.length === 0) {
+        items.appendChild(el("p", "empty", "항목이 없어요. 아래에서 새 항목을 추가해 보세요."));
+      }
+      cat.items.forEach(item => {
+        const row = el("div", "row");
+
+        const label = el("label", "item");
+        const cb = document.createElement("input");
+        cb.type = "checkbox";
+        cb.checked = item.done;
+        cb.addEventListener("change", () => {
+          item.done = cb.checked;
+          save();
+          updateProgress();
+        });
+        const box = el("span", "box");
+        box.innerHTML = CHECK_SVG;
+        label.append(cb, box, el("span", "label", item.text));
+
+        const del = el("button", "del", "×");
+        del.title = "이 항목 삭제";
+        del.setAttribute("aria-label", "'" + item.text + "' 삭제");
+        del.addEventListener("click", () => {
+          cat.items = cat.items.filter(x => x.id !== item.id);
+          save();
+          render();
+        });
+
+        row.append(label, del);
+        items.appendChild(row);
+      });
+
+      // 새 항목 추가 입력칸
+      const form = el("form", "add");
+      const input = el("input");
+      input.type = "text";
+      input.placeholder = "새 항목 입력";
+      input.maxLength = 80;
+      input.setAttribute("aria-label", info.name + "에 새 항목 추가");
+      const addBtn = el("button", null, "추가");
+      addBtn.type = "submit";
+      form.append(input, addBtn);
+      form.addEventListener("submit", e => {
+        e.preventDefault();
+        const text = input.value.trim();
+        if (!text) { input.focus(); return; }
+        cat.items.push({ id: newId(), text: text, done: false });
+        save();
+        render();
+        // 연속으로 추가하기 편하게 입력칸에 다시 커서를 둠
+        const again = list.querySelector(`[data-cat="${cat.id}"] .add input`);
+        if (again) again.focus();
+      });
+      items.appendChild(form);
+
+      card.appendChild(items);
+      list.appendChild(card);
+    });
+    updateProgress();
+  }
+
+  // ───────────────────────────────────────────────
+  // 4. 진행률 계산 (체크하거나 항목이 바뀔 때마다 실행)
+  // ───────────────────────────────────────────────
+  function updateProgress() {
+    let total = 0, done = 0;
+    state.forEach(cat => {
+      const card = list.querySelector(`[data-cat="${cat.id}"]`);
+      if (!card) return;
+      const n = cat.items.length;
+      const d = cat.items.filter(i => i.done).length;
+      const pct = n ? Math.round(d / n * 100) : 0;
+      card.querySelector(".mini-bar > div").style.width = pct + "%";
+      card.querySelector(".card-pct").textContent = pct + "%";
+      card.querySelector(".cnt").textContent = d + "/" + n;
+      card.classList.toggle("complete", n > 0 && pct === 100);
+      total += n; done += d;
+    });
+    const pct = total ? Math.round(done / total * 100) : 0;
+    document.getElementById("totalPct").textContent = pct;
+    document.getElementById("totalCount").textContent = done + " / " + total;
+    document.getElementById("totalBar").style.width = pct + "%";
+    document.getElementById("celebrate").classList.toggle("show", total > 0 && pct === 100);
+  }
+
+  // ───────────────────────────────────────────────
+  // 5. 하단 버튼들
+  // ───────────────────────────────────────────────
+  function setAll(open) {
+    openCards.clear();
+    if (open) state.forEach(c => openCards.add(c.id));
+    render();
+  }
+  document.getElementById("openAll").onclick = () => setAll(true);
+  document.getElementById("closeAll").onclick = () => setAll(false);
+
+  document.getElementById("reset").onclick = () => {
+    const ok = confirm(
+      "체크리스트를 처음 상태로 초기화할까요?\n\n" +
+      "· 모든 체크가 해제됩니다\n" +
+      "· 직접 추가한 항목은 사라지고, 삭제한 기본 항목은 다시 생깁니다\n\n" +
+      "이 작업은 되돌릴 수 없습니다."
+    );
+    if (!ok) return;
+    state = makeDefault(null);
+    try { localStorage.removeItem(OLD_KEY); } catch (e) {}
+    save();
+    render();
+  };
+
+  render();
+</script>
+</body>
+</html>
